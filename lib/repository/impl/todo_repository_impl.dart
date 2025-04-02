@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:todo_app/data_source/local/todo_data_source.dart';
 
@@ -12,12 +13,28 @@ class TodoRepositoryImpl implements TodoRepository {
      this.todoDataSource,
   );
 
+  @override
+  Future<List<Todo>> getTodos() async {
+    final jsonList = await todoDataSource.readTodos();
+    return jsonList.map((e)=>Todo.fromJson(e)).toList();
+  }
 
 
   @override
-  Future<void> addTodo(String title) {
-    // TODO: implement addTodo
-    throw UnimplementedError();
+  Future<void> addTodo(String title) async {
+    final todos = await getTodos();
+    final newId = todos.isEmpty ? 1 : todos.map((e) => e.id).reduce(max) + 1;
+
+    final newTodo = Todo(
+      userId: 1,
+      id: newId,
+      title: title,
+      completed: false,
+      createdAt: DateTime.now()
+    );
+    todos.add(newTodo);
+    await todoDataSource.writeTodos(todos.map((e) => e.toJson()).toList());
+    //로그 처리
   }
 
   @override
@@ -32,11 +49,6 @@ class TodoRepositoryImpl implements TodoRepository {
     throw UnimplementedError();
   }
 
-  @override
-  Future<List<Todo>> getTodos() async {
-    final jsonList = await todoDataSource.readTodos();
-    return jsonList.map((e)=>Todo.fromJson(e)).toList();
-  }
 
   @override
   Future<List<Todo>> getToggleTodo(bool completed) {

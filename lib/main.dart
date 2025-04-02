@@ -32,6 +32,14 @@ void main() async {
         print(todos);  // 이쁘게 보이게 수정 메서드 작성
         break;
       case '2':
+        stdout.write('할 일을 입력하세요: ');
+        final newTitle = stdin.readLineSync();
+        if (newTitle == null) {
+          print('할 일이 입력되지 않았습니다.');
+        } else {
+          await todoRepository.addTodo(newTitle);
+          print('할일 추가됨');
+        }
         break;
       case '3':
         break;
