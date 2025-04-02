@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:todo_app/data_source/local/todo_data_source.dart';
 
+import '../../model/todo.dart';
 import '../local/todo_repository.dart';
 
 class TodoRepositoryImpl implements TodoRepository {
@@ -8,6 +11,8 @@ class TodoRepositoryImpl implements TodoRepository {
   const TodoRepositoryImpl(
      this.todoDataSource,
   );
+
+
 
   @override
   Future<void> addTodo(String title) {
@@ -22,19 +27,19 @@ class TodoRepositoryImpl implements TodoRepository {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getSortedDate(int flag) {
+  Future<List<Todo>> getSortedDate(int flag) {
     // TODO: implement getSortedDate
     throw UnimplementedError();
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getTodos() {
-    // TODO: implement getTodos
-    throw UnimplementedError();
+  Future<List<Todo>> getTodos() async {
+    final jsonList = await todoDataSource.readTodos();
+    return jsonList.map((e)=>Todo.fromJson(e)).toList();
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getToggleTodo(bool completed) {
+  Future<List<Todo>> getToggleTodo(bool completed) {
     // TODO: implement getToggleTodo
     throw UnimplementedError();
   }
