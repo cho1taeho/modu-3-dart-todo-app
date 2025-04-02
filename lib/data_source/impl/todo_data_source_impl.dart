@@ -10,8 +10,10 @@ class TodoDataSourceImpl implements TodoDataSource {
   TodoDataSourceImpl({required this.filePath});
 
   @override
-  Future<List<Map<String, dynamic>>> readTodos() {
-
+  Future<List<Map<String, dynamic>>> readTodos() async {
+    final File file = File(filePath);
+    final List<dynamic> data = file.readAsString();
+    final dataList = jsonDecode(data);
   }
 
   @override
@@ -20,8 +22,6 @@ class TodoDataSourceImpl implements TodoDataSource {
     final File file = File(filePath);
     final jsonString = jsonEncode(todos);
     await file.writeAsString(jsonString);
-
-
 
 
   }
