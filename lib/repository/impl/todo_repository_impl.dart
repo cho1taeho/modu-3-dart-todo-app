@@ -2,23 +2,20 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:todo_app/data_source/local/todo_data_source.dart';
-
+import 'package:collection/collection.dart';
 import '../../model/todo.dart';
 import '../local/todo_repository.dart';
 
 class TodoRepositoryImpl implements TodoRepository {
   final TodoDataSource todoDataSource;
 
-  const TodoRepositoryImpl(
-     this.todoDataSource,
-  );
+  const TodoRepositoryImpl(this.todoDataSource);
 
   @override
   Future<List<Todo>> getTodos() async {
     final jsonList = await todoDataSource.readTodos();
-    return jsonList.map((e)=>Todo.fromJson(e)).toList();
+    return jsonList.map((e) => Todo.fromJson(e)).toList();
   }
-
 
   @override
   Future<void> addTodo(String title) async {
@@ -30,7 +27,7 @@ class TodoRepositoryImpl implements TodoRepository {
       id: newId,
       title: title,
       completed: false,
-      createdAt: DateTime.now()
+      createdAt: DateTime.now(),
     );
     todos.add(newTodo);
     await todoDataSource.writeTodos(todos.map((e) => e.toJson()).toList());
@@ -38,7 +35,7 @@ class TodoRepositoryImpl implements TodoRepository {
   }
 
   @override
-  Future<void> updateTodo(int id, String title) async{
+  Future<void> updateTodo(int id, String title) async {
     final todos = await getTodos();
     final index = todos.indexWhere((e) => e.id == id);
     final updateTitleTodo = todos[index].copyWith(title: title);
@@ -47,10 +44,9 @@ class TodoRepositoryImpl implements TodoRepository {
   }
 
   @override
-  Future<void> getToggleTodo(int id) async {
+  Future<void> toggleTodo(int id) async {
     final todos = await getTodos();
     final index = todos.indexWhere((e) => e.id == id);
-
 
     if (todos[index].completed == true) {
       final updateTitleTodo = todos[index].copyWith(completed: false);
@@ -63,37 +59,55 @@ class TodoRepositoryImpl implements TodoRepository {
     await todoDataSource.writeTodos(todos.map((e) => e.toJson()).toList());
   }
 
-
   @override
-  Future<void> deleteTodo(int id) {
-    // TODO: implement deleteTodo
-    throw UnimplementedError();
+  Future<void> deleteTodo(int id) async {
+    final todos = await getTodos();
+    todos.removeWhere((e) => e.id == id);
+
+    await todoDataSource.writeTodos(todos.map((e) => e.toJson()).toList());
   }
 
   @override
-  Future<List<Todo>> getSortedDate(int flag) {
-    // TODO: implement getSortedDate
-    throw UnimplementedError();
+  Future<List<Todo>> getSortedDate(int choice) async {
+    final todos = await getTodos();
+
+    if (choice == 1) {
+      final sortedTodos = todos.sorted(
+        (a, b) => a.createdAt.compareTo(b.createdAt),
+      );
+      return sortedTodos;
+    } else if(choice == 2) {
+      final sortedTodos = todos.sorted(
+        (a, b) => b.createdAt.compareTo(a.createdAt),
+      );
+      return sortedTodos;
+    }else{
+      return todos;
+    }
+
   }
-
-
-
 
   @override
-  Future<void> toggleTodo(int id) {
-    // TODO: implement toggleTodo
-    throw UnimplementedError();
+  Future<List<Todo>> getToggleTodo(int choice) async {
+    final todos = await getTodos();
+
+    if (choice == 1) {
+      final completedTodos = todos.where((e) => e.completed == true).toList();
+      return completedTodos;
+    } else if (choice == 2) {
+      final completedTodos = todos.where((e) => e.completed == false).toList();
+      return completedTodos;
+    } else {
+      return todos;
+    }
+
   }
-
-
 
   @override
-  Future<void> writeLogTodo() {
-    // TODO: implement writeLogTodo
-    throw UnimplementedError();
+  Future<void> writeLogTodo() async {
+    final todos = await getTodos();
+
+
   }
-
-  indexWhere(bool Function(dynamic e) param0) {}
-
 
 }

@@ -4,6 +4,7 @@ import 'package:todo_app/data_source/impl/todo_data_source_impl.dart';
 import 'package:todo_app/repository/impl/todo_repository_impl.dart';
 
 import 'data_source/local/todo_data_source.dart';
+import 'model/todo.dart';
 
 void main() async {
   final filePath = r'lib/data/';
@@ -13,6 +14,7 @@ void main() async {
   );
   final todoRepository = TodoRepositoryImpl(todoDataSource);
 
+
   while (true) {
     print('===== 일 목록 보기 =====');
     print('1. 목록 보기');
@@ -20,6 +22,8 @@ void main() async {
     print('3. 할 일 수정');
     print('4. 완료 상태 토글');
     print('5. 할 일 삭제');
+    print('6. 날짜 정렬보기');
+    print('7. 완료/미완료 보기');
     print('0. 종료');
     print('======================');
 
@@ -29,7 +33,8 @@ void main() async {
     switch (input) {
       case '1':
         final todos = await todoRepository.getTodos();
-        print(todos);  // 이쁘게 보이게 수정 메서드 작성
+
+        print('$todos');  // 이쁘게 보이게 수정 메서드 작성
         break;
       case '2':
         stdout.write('할 일을 입력하세요: ');
@@ -43,24 +48,66 @@ void main() async {
         break;
       case '3':
         stdout.write('수정할 ID를 입력하세요: ');
-        final idString = stdin.readLineSync();
-        final id = int.parse(idString ?? '');
+        final id = int.parse(stdin.readLineSync() ?? '');
         stdout.write('수정할 제목을 입력하세요: ');
         final title = stdin.readLineSync();
         await todoRepository.updateTodo(id, title ?? '');
         break;
       case '4':  //delete
         stdout.write('완료 상태를 토글할 할 일 ID를 입력하세요: ');
-        final idString = stdin.readLineSync();
-        final id = int.parse(idString ?? '');
-        await todoRepository.getToggleTodo(id);
+        final id = int.parse(stdin.readLineSync() ?? '');
+        await todoRepository.toggleTodo(id);
         stdout.write('할 일 완료 상태를 변경하였습니다.');
 
         break;
       case '5':
+        stdout.write('삭제 할 Id를 입력하세요:');
+        final id = int.parse(stdin.readLineSync() ?? '');
+        await todoRepository.deleteTodo(id);
+
+        break;
+      case '6':
+        stdout.write('데이터를 오름차순으로 보고 싶으면 1번 내림차순이면 2번을 눌러주세요.');
+        final choice = int.parse(stdin.readLineSync() ?? '');
+        if (choice == 1 || choice ==2) {
+          final sortedData = await todoRepository.getSortedDate(choice);
+          print(sortedData);
+        } else {
+          print('잘못된 입력입니다.');
+        }
+        break;
+      case '7':
+        stdout.write('완료 상태를 보고 싶으면 1번 미완료 상태를 보고 싶으면 2번을 눌러주세요.');
+        final choice = int.parse(stdin.readLineSync() ?? '');
+        if (choice == 1 || choice == 2) {
+          print(await todoRepository.getToggleTodo(choice));
+        } else {
+          print('잘못된 입력입니다.');
+        }
         break;
       case '0':
-        break;
+        print('프로그램 종료');
+        exit(0);
+      default:
+        print('해당 메뉴는 지원하지 않습니다. 다시 눌러주세요.');
     }
+  }
+}
+
+void printTodos(List<Todo> todos) {
+  print('할 일 목록');
+  if (todos.isNotEmpty) {
+    for (Todo todo in todos) {
+      String checked = todo.completed ? '[✔]' : '[ ]';
+      print('${todo.id}. $checked ${todo.title} ${todo.createdAt}');
+
+      // if (todo.completed == true) {
+      //   print('${todo.id}. [✔] ${todo.title} ${todo.createdAt}');
+      // } else{
+      //   print('${todo.id}. [  ] ${todo.title} ${todo.createdAt}');
+      // }
+    }
+  } else {
+    print('할 일이 없습니다.');
   }
 }
