@@ -16,13 +16,16 @@ class TodoDataSourceImpl implements TodoDataSource {
     final File file = File(filePath);
     final backUpFile = File(backUpFilePath);
 
+    String data = await file.readAsString();
 
-    final data = await file.readAsString();
     if (data.trim().isEmpty) {
-      await backUpFile.copy(filePath);
+      File copyFile = await backUpFile.copy(filePath);
+      data = await copyFile.readAsString();
     }
 
-    final dataList = jsonDecode(data);
+
+
+    final List<dynamic> dataList = jsonDecode(data);
 
     return List<Map<String, dynamic>>.from(dataList);
   }

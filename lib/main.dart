@@ -17,7 +17,7 @@ void main() async {
 
 
   final todoRepository = TodoRepositoryImpl(todoDataSource);
-  todoRepository.writeLogTodo('앱 시작됨.');
+  await todoRepository.writeLogTodo('앱 시작됨.');
 
   while (true) {
     print('===== 일 목록 보기 =====');
