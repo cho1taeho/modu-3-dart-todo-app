@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:todo_app/data_source/impl/todo_data_source_impl.dart';
@@ -42,7 +43,7 @@ void main() async {
         break;
       case '2':
         stdout.write('할 일을 입력하세요: ');
-        final newTitle = stdin.readLineSync();
+        final newTitle = stdin.readLineSync(encoding: Utf8Codec());
         if (newTitle == null) {
           print('할 일이 입력되지 않았습니다.');
         } else {
@@ -57,7 +58,7 @@ void main() async {
         final todosIdList = await todoRepository.getTodosIdList();
         if (todosIdList.any((e) => e == id)) {
           stdout.write('수정할 제목을 입력하세요: ');
-          final title = stdin.readLineSync();
+          final title = stdin.readLineSync(encoding: Utf8Codec());
           await todoRepository.updateTodo(id ?? 0, title ?? '');
         } else {
           print('수정 할 ID가 없습니다.');
