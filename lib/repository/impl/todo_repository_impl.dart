@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:todo_app/data_source/local/todo_data_source.dart';
@@ -8,6 +9,7 @@ import '../local/todo_repository.dart';
 
 class TodoRepositoryImpl implements TodoRepository {
   final TodoDataSource todoDataSource;
+  final String logFilePath = r'C:\dev\DartProjects\modu-3-dart-todo-app\lib\data\log.txt';
 
   const TodoRepositoryImpl(this.todoDataSource);
 
@@ -15,6 +17,8 @@ class TodoRepositoryImpl implements TodoRepository {
   Future<List<Todo>> getTodos() async {
     final jsonList = await todoDataSource.readTodos();
     return jsonList.map((e) => Todo.fromJson(e)).toList();
+
+
   }
 
   @override
@@ -32,6 +36,7 @@ class TodoRepositoryImpl implements TodoRepository {
     todos.add(newTodo);
     await todoDataSource.writeTodos(todos.map((e) => e.toJson()).toList());
     //로그 처리
+    await writeLogTodo('할 일 추가 완료 - ID: $newId, 제목: $title');
   }
 
   @override
@@ -112,11 +117,11 @@ class TodoRepositoryImpl implements TodoRepository {
 
 
   @override
-  Future<void> writeLogTodo() async {
-    final todos = await getTodos();
-
-
-
+  Future<void> writeLogTodo(String message) async {
+    final File logFile = File(logFilePath);
+    final timestamp = DateTime.now().toIso8601String();
+    final logMessage = timestamp + ' ' + message;
+    await logFile.writeAsString(message, mode: FileMode.append);
   }
 
 }

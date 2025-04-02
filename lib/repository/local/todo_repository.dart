@@ -8,6 +8,6 @@ abstract interface class TodoRepository {
   Future<void> deleteTodo(int id);
   Future<List<Todo>> getSortedDate(int flag);
   Future<void> toggleTodo(int id);
-  Future<void> writeLogTodo();
+  Future<void> writeLogTodo(String message);
 
 }
