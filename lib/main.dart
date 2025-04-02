@@ -33,8 +33,8 @@ void main() async {
     switch (input) {
       case '1':
         final todos = await todoRepository.getTodos();
-
-        print('$todos');  // 이쁘게 보이게 수정 메서드 작성
+        _printTodos(todos);
+        //print('$todos');  // 이쁘게 보이게 수정 메서드 작성
         break;
       case '2':
         stdout.write('할 일을 입력하세요: ');
@@ -94,8 +94,10 @@ void main() async {
   }
 }
 
-void printTodos(List<Todo> todos) {
-  print('할 일 목록');
+void _printTodos(List<Todo> todos) {
+  print('======================');
+  print('====== 할 일 목록 ======');
+  print('======================');
   if (todos.isNotEmpty) {
     for (Todo todo in todos) {
       String checked = todo.completed ? '[✔]' : '[ ]';
@@ -110,4 +112,5 @@ void printTodos(List<Todo> todos) {
   } else {
     print('할 일이 없습니다.');
   }
+  print('======================');
 }
