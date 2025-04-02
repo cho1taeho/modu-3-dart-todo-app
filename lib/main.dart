@@ -44,10 +44,10 @@ void main() async {
       case '2':
         stdout.write('할 일을 입력하세요: ');
         final newTitle = stdin.readLineSync(encoding: Utf8Codec());
-        if (newTitle == null) {
+        if (newTitle == '') {
           print('할 일이 입력되지 않았습니다.');
         } else {
-          await todoRepository.addTodo(newTitle);
+          await todoRepository.addTodo(newTitle ?? '');
           print('할일 추가됨');
         }
         break;
@@ -59,6 +59,7 @@ void main() async {
         if (todosIdList.any((e) => e == id)) {
           stdout.write('수정할 제목을 입력하세요: ');
           final title = stdin.readLineSync(encoding: Utf8Codec());
+
           await todoRepository.updateTodo(id ?? 0, title ?? '');
         } else {
           print('수정 할 ID가 없습니다.');
@@ -106,7 +107,7 @@ void main() async {
         }
         break;
       case '0':
-        print('프로그램 종료');
+        print('프로그램을 종료합니다. 데이터가 저장되었습니다.');
         await todoRepository.writeLogTodo('앱 종료됨.');
         exit(0);
       default:
