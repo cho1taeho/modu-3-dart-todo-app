@@ -43,13 +43,19 @@ void main() async {
         break;
       case '3':
         stdout.write('수정할 ID를 입력하세요: ');
-        final id = stdin.readLineSync();
-        final newId = int.parse(id ?? '');
+        final idString = stdin.readLineSync();
+        final id = int.parse(idString ?? '');
         stdout.write('수정할 제목을 입력하세요: ');
         final title = stdin.readLineSync();
-        await todoRepository.updateTodo(newId, title ?? '');
+        await todoRepository.updateTodo(id, title ?? '');
         break;
-      case '4':
+      case '4':  //delete
+        stdout.write('완료 상태를 토글할 할 일 ID를 입력하세요: ');
+        final idString = stdin.readLineSync();
+        final id = int.parse(idString ?? '');
+        await todoRepository.getToggleTodo(id);
+        stdout.write('할 일 완료 상태를 변경하였습니다.');
+
         break;
       case '5':
         break;

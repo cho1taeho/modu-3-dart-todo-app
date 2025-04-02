@@ -47,6 +47,24 @@ class TodoRepositoryImpl implements TodoRepository {
   }
 
   @override
+  Future<void> getToggleTodo(int id) async {
+    final todos = await getTodos();
+    final index = todos.indexWhere((e) => e.id == id);
+
+
+    if (todos[index].completed == true) {
+      final updateTitleTodo = todos[index].copyWith(completed: false);
+      todos[index] = updateTitleTodo;
+    } else {
+      final updateTitleTodo = todos[index].copyWith(completed: true);
+      todos[index] = updateTitleTodo;
+    }
+
+    await todoDataSource.writeTodos(todos.map((e) => e.toJson()).toList());
+  }
+
+
+  @override
   Future<void> deleteTodo(int id) {
     // TODO: implement deleteTodo
     throw UnimplementedError();
@@ -59,11 +77,7 @@ class TodoRepositoryImpl implements TodoRepository {
   }
 
 
-  @override
-  Future<List<Todo>> getToggleTodo(bool completed) {
-    // TODO: implement getToggleTodo
-    throw UnimplementedError();
-  }
+
 
   @override
   Future<void> toggleTodo(int id) {

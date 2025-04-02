@@ -7,7 +7,7 @@ abstract interface class TodoRepository {
   Future<void> toggleTodo(int id);
   Future<void> deleteTodo(int id);
   Future<List<Todo>> getSortedDate(int flag);
-  Future<List<Todo>> getToggleTodo(bool completed);
+  Future<void> getToggleTodo(int id);
   Future<void> writeLogTodo();
 
 }
