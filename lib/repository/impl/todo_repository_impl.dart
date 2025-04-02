@@ -38,6 +38,15 @@ class TodoRepositoryImpl implements TodoRepository {
   }
 
   @override
+  Future<void> updateTodo(int id, String title) async{
+    final todos = await getTodos();
+    final index = todos.indexWhere((e) => e.id == id);
+    final updateTitleTodo = todos[index].copyWith(title: title);
+    todos[index] = updateTitleTodo;
+    await todoDataSource.writeTodos(todos.map((e) => e.toJson()).toList());
+  }
+
+  @override
   Future<void> deleteTodo(int id) {
     // TODO: implement deleteTodo
     throw UnimplementedError();
@@ -62,17 +71,15 @@ class TodoRepositoryImpl implements TodoRepository {
     throw UnimplementedError();
   }
 
-  @override
-  Future<void> updateTodo(int id, String title) {
-    // TODO: implement updateTodo
-    throw UnimplementedError();
-  }
+
 
   @override
   Future<void> writeLogTodo() {
     // TODO: implement writeLogTodo
     throw UnimplementedError();
   }
+
+  indexWhere(bool Function(dynamic e) param0) {}
 
 
 }
