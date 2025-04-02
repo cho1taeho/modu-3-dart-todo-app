@@ -9,7 +9,7 @@ import '../local/todo_repository.dart';
 
 class TodoRepositoryImpl implements TodoRepository {
   final TodoDataSource todoDataSource;
-  final String logFilePath = r'C:\dev\DartProjects\modu-3-dart-todo-app\lib\data\log.txt';
+  final String logFilePath = r'lib/data/log.txt';
 
   const TodoRepositoryImpl(this.todoDataSource);
 
@@ -17,8 +17,6 @@ class TodoRepositoryImpl implements TodoRepository {
   Future<List<Todo>> getTodos() async {
     final jsonList = await todoDataSource.readTodos();
     return jsonList.map((e) => Todo.fromJson(e)).toList();
-
-
   }
 
   @override
@@ -46,6 +44,7 @@ class TodoRepositoryImpl implements TodoRepository {
     final updateTitleTodo = todos[index].copyWith(title: title);
     todos[index] = updateTitleTodo;
     await todoDataSource.writeTodos(todos.map((e) => e.toJson()).toList());
+    await writeLogTodo('할 일 제목 수정 - ID: $id, 새로운 제목: $title');
   }
 
   @override
@@ -56,9 +55,11 @@ class TodoRepositoryImpl implements TodoRepository {
     if (todos[index].completed == true) {
       final updateTitleTodo = todos[index].copyWith(completed: false);
       todos[index] = updateTitleTodo;
+      await writeLogTodo('할 일 완료 토글 - ID: $id, 상태: 미완료');
     } else {
       final updateTitleTodo = todos[index].copyWith(completed: true);
       todos[index] = updateTitleTodo;
+      await writeLogTodo('할 일 완료 토글 - ID: $id, 상태: 완료됨');
     }
 
     await todoDataSource.writeTodos(todos.map((e) => e.toJson()).toList());
@@ -70,6 +71,7 @@ class TodoRepositoryImpl implements TodoRepository {
     todos.removeWhere((e) => e.id == id);
 
     await todoDataSource.writeTodos(todos.map((e) => e.toJson()).toList());
+    await writeLogTodo('할 일 삭제됨 - ID: $id');
   }
 
   @override
@@ -81,15 +83,14 @@ class TodoRepositoryImpl implements TodoRepository {
         (a, b) => b.createdAt.compareTo(a.createdAt),
       );
       return sortedTodos;
-    } else if(choice == 2) {
+    } else if (choice == 2) {
       final sortedTodos = todos.sorted(
         (a, b) => a.createdAt.compareTo(b.createdAt),
       );
       return sortedTodos;
-    }else{
+    } else {
       return todos;
     }
-
   }
 
   @override
@@ -115,13 +116,11 @@ class TodoRepositoryImpl implements TodoRepository {
     return todosIdList;
   }
 
-
   @override
   Future<void> writeLogTodo(String message) async {
     final File logFile = File(logFilePath);
     final timestamp = DateTime.now().toIso8601String();
-    final logMessage = timestamp + ' ' + message;
-    await logFile.writeAsString(message, mode: FileMode.append);
+    final logMessage = '[$timestamp] $message \n';
+    await logFile.writeAsString(logMessage, mode: FileMode.append);
   }
-
 }

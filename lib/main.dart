@@ -8,12 +8,16 @@ import 'model/todo.dart';
 
 void main() async {
   final filePath = r'lib/data/';
+  final backUpFilePath = r'lib/data/';
 
   final TodoDataSource todoDataSource = TodoDataSourceImpl(
     filePath: filePath + 'todos.json',
+    backUpFilePath: backUpFilePath + 'backup.dat'
   );
-  final todoRepository = TodoRepositoryImpl(todoDataSource);
 
+
+  final todoRepository = TodoRepositoryImpl(todoDataSource);
+  todoRepository.writeLogTodo('앱 시작됨.');
 
   while (true) {
     print('===== 일 목록 보기 =====');
@@ -60,7 +64,7 @@ void main() async {
         }
 
         break;
-      case '4':  //delete
+      case '4': //delete
         stdout.write('완료 상태를 토글할 할 일 ID를 입력하세요: ');
         final id = int.tryParse(stdin.readLineSync() ?? '');
         final todosIdList = await todoRepository.getTodosIdList();
@@ -89,7 +93,6 @@ void main() async {
           _printTodos(sortedData);
         } else {
           print('잘못된 입력입니다.');
-
         }
         break;
       case '7':
@@ -103,6 +106,7 @@ void main() async {
         break;
       case '0':
         print('프로그램 종료');
+        await todoRepository.writeLogTodo('앱 종료됨.');
         exit(0);
       default:
         print('해당 메뉴는 지원하지 않습니다. 다시 눌러주세요.');
@@ -118,8 +122,9 @@ void _printTodos(List<Todo> todos) {
   if (todos.isNotEmpty) {
     for (Todo todo in todos) {
       String checked = todo.completed ? '[✔]' : '[ ]';
-      print('${todo.id}. $checked ${todo.title} (${formatCreatedAt.format(todo.createdAt)})');
-
+      print(
+        '${todo.id}. $checked ${todo.title} (${formatCreatedAt.format(todo.createdAt)})',
+      );
     }
   } else {
     print('할 일이 없습니다.');
