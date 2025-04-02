@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:todo_app/data_source/impl/todo_data_source_impl.dart';
 import 'package:todo_app/repository/impl/todo_repository_impl.dart';
-
+import 'package:intl/intl.dart';
 import 'data_source/local/todo_data_source.dart';
 import 'model/todo.dart';
 
@@ -48,39 +48,55 @@ void main() async {
         break;
       case '3':
         stdout.write('수정할 ID를 입력하세요: ');
-        final id = int.parse(stdin.readLineSync() ?? '');
-        stdout.write('수정할 제목을 입력하세요: ');
-        final title = stdin.readLineSync();
-        await todoRepository.updateTodo(id, title ?? '');
+        final id = int.tryParse(stdin.readLineSync() ?? '');
+
+        final todosIdList = await todoRepository.getTodosIdList();
+        if (todosIdList.any((e) => e == id)) {
+          stdout.write('수정할 제목을 입력하세요: ');
+          final title = stdin.readLineSync();
+          await todoRepository.updateTodo(id ?? 0, title ?? '');
+        } else {
+          print('수정 할 ID가 없습니다.');
+        }
+
         break;
       case '4':  //delete
         stdout.write('완료 상태를 토글할 할 일 ID를 입력하세요: ');
-        final id = int.parse(stdin.readLineSync() ?? '');
-        await todoRepository.toggleTodo(id);
-        stdout.write('할 일 완료 상태를 변경하였습니다.');
-
+        final id = int.tryParse(stdin.readLineSync() ?? '');
+        final todosIdList = await todoRepository.getTodosIdList();
+        if (todosIdList.any((e) => e == id)) {
+          await todoRepository.toggleTodo(id ?? 0);
+          stdout.write('할 일 완료 상태를 변경하였습니다.');
+        } else {
+          print('토글 할 ID가 없습니다.');
+        }
         break;
       case '5':
-        stdout.write('삭제 할 Id를 입력하세요:');
-        final id = int.parse(stdin.readLineSync() ?? '');
-        await todoRepository.deleteTodo(id);
-
+        stdout.write('삭제 할 ID를 입력하세요:');
+        final id = int.tryParse(stdin.readLineSync() ?? '');
+        final todosIdList = await todoRepository.getTodosIdList();
+        if (todosIdList.any((e) => e == id)) {
+          await todoRepository.deleteTodo(id ?? 0);
+        } else {
+          print('삭제 할 ID가 없습니다.');
+        }
         break;
       case '6':
-        stdout.write('데이터를 오름차순으로 보고 싶으면 1번 내림차순이면 2번을 눌러주세요.');
-        final choice = int.parse(stdin.readLineSync() ?? '');
-        if (choice == 1 || choice ==2) {
-          final sortedData = await todoRepository.getSortedDate(choice);
-          print(sortedData);
+        stdout.write('데이터를 최신순으로 보고 싶으면 1번 등록순이면 2번을 눌러주세요.');
+        final choice = int.tryParse(stdin.readLineSync() ?? '');
+        if (choice == 1 || choice == 2) {
+          final sortedData = await todoRepository.getSortedDate(choice ?? 0);
+          _printTodos(sortedData);
         } else {
           print('잘못된 입력입니다.');
+
         }
         break;
       case '7':
         stdout.write('완료 상태를 보고 싶으면 1번 미완료 상태를 보고 싶으면 2번을 눌러주세요.');
-        final choice = int.parse(stdin.readLineSync() ?? '');
+        final choice = int.tryParse(stdin.readLineSync() ?? '');
         if (choice == 1 || choice == 2) {
-          print(await todoRepository.getToggleTodo(choice));
+          _printTodos(await todoRepository.getToggleTodo(choice ?? 0));
         } else {
           print('잘못된 입력입니다.');
         }
@@ -98,16 +114,12 @@ void _printTodos(List<Todo> todos) {
   print('======================');
   print('====== 할 일 목록 ======');
   print('======================');
+  final formatCreatedAt = DateFormat('yyyy-MM-dd HH:mm');
   if (todos.isNotEmpty) {
     for (Todo todo in todos) {
       String checked = todo.completed ? '[✔]' : '[ ]';
-      print('${todo.id}. $checked ${todo.title} ${todo.createdAt}');
+      print('${todo.id}. $checked ${todo.title} (${formatCreatedAt.format(todo.createdAt)})');
 
-      // if (todo.completed == true) {
-      //   print('${todo.id}. [✔] ${todo.title} ${todo.createdAt}');
-      // } else{
-      //   print('${todo.id}. [  ] ${todo.title} ${todo.createdAt}');
-      // }
     }
   } else {
     print('할 일이 없습니다.');

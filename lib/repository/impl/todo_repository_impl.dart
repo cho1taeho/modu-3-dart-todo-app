@@ -73,12 +73,12 @@ class TodoRepositoryImpl implements TodoRepository {
 
     if (choice == 1) {
       final sortedTodos = todos.sorted(
-        (a, b) => a.createdAt.compareTo(b.createdAt),
+        (a, b) => b.createdAt.compareTo(a.createdAt),
       );
       return sortedTodos;
     } else if(choice == 2) {
       final sortedTodos = todos.sorted(
-        (a, b) => b.createdAt.compareTo(a.createdAt),
+        (a, b) => a.createdAt.compareTo(b.createdAt),
       );
       return sortedTodos;
     }else{
@@ -100,12 +100,21 @@ class TodoRepositoryImpl implements TodoRepository {
     } else {
       return todos;
     }
-
   }
+
+  Future<List<int>> getTodosIdList() async {
+    final todos = await getTodos();
+
+    final todosIdList = todos.map((e) => e.id).toList();
+
+    return todosIdList;
+  }
+
 
   @override
   Future<void> writeLogTodo() async {
     final todos = await getTodos();
+
 
 
   }
