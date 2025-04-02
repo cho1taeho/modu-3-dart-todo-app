@@ -8,5 +8,4 @@ abstract interface class TodoRepository {
   Future<List<Map<String, dynamic>>> getToggleTodo(bool completed);
   Future<void> writeLogTodo();
 
-
 }

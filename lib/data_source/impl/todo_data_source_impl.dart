@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:todo_app/data_source/local/todo_data_source.dart';
 
+import '../../model/todo.dart';
+
 class TodoDataSourceImpl implements TodoDataSource {
 
   final String filePath;
@@ -12,8 +14,10 @@ class TodoDataSourceImpl implements TodoDataSource {
   @override
   Future<List<Map<String, dynamic>>> readTodos() async {
     final File file = File(filePath);
-    final List<dynamic> data = file.readAsString();
+    final data = await file.readAsString();
     final dataList = jsonDecode(data);
+
+    return List<Map<String, dynamic>>.from(dataList);
   }
 
   @override
@@ -23,8 +27,5 @@ class TodoDataSourceImpl implements TodoDataSource {
     final jsonString = jsonEncode(todos);
     await file.writeAsString(jsonString);
 
-
   }
-  
-  
 }
