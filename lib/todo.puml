@@ -17,7 +17,7 @@ interface TodoRepository {
     Future<void> addTodo(String title);
     Future<void> updateTodo(int id, String title);
     Future<void> toggleTodo(int id);
-    Future<void> deleteTOdo(int id);
+    Future<void> deleteTodo(int id);
     Future<List<Todo>> getSortedDate(int flag);
     Future<List<Todo>> getToggleTodo(bool completed);
     - Future<void> _writeLogTodo();
